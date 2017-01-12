@@ -13,6 +13,7 @@ ORDERBY = 'ORDER BY'
 
 import re
 import collections
+import contextlib
 import urllib2
 import warnings
 
@@ -330,7 +331,9 @@ class SPARQLStore(NSSPARQLWrapper, Store):
         self.timeout = self._timeout
         self.setQuery(query)
 
-        return Result.parse(SPARQLWrapper.query(self).response)
+        with contextlib.closing(SPARQLWrapper.query(self).response) as res:
+            return Result.parse(res)
+
 
     def triples(self, (s, p, o), context=None):
         """
